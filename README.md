@@ -91,10 +91,12 @@ The completed script is [certs/key.sh](certs/key.sh)
 
 1. [server.go](server.go) shows how to listen on HTTPS with requiring client-side verification. 
 
+	Note: service side need the three files -  `CA.cert`, `servier.cert`, `server.key`
+
 	```go
 	tlsConfig := &tls.Config{
 		ClientCAs:  caCertPool,
-		ClientAuth: tls.RequireAndVerifyClientCert,
+		ClientAuth: tls.RequireAndVerifyClientCert, //<-- this is the key
 		MinVersion: tls.VersionTLS12,
 	}
 	```
@@ -128,7 +130,9 @@ The completed script is [certs/key.sh](certs/key.sh)
 	2021/12/31 14:47:13 >>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<
 	``` 
 
-1. [client.go](client.go) shows how the client connects to the server by using its certification.
+2. [client.go](client.go) shows how the client connects to the server by using its certification.
+
+	Note: client side need the three files -  `CA.cert`, `client.cert`, `client.key`
 
 	You can indicate `-c=a` for client a, and `-c=b` for client b. such as:
 	```bash
