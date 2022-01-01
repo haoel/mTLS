@@ -1,14 +1,21 @@
 # mTLS Golang Example
 
+- [mTLS Golang Example](#mtls-golang-example)
+	- [1. What is mutual TLS (mTLS)?](#1-what-is-mutual-tls-mtls)
+	- [2. How does mTLS work?](#2-how-does-mtls-work)
+	- [3. Example Walkthrough](#3-example-walkthrough)
+		- [3.1 Certs and Keys](#31-certs-and-keys)
+		- [3.2 Server.go](#32-servergo)
+		- [3.2 Client.go](#32-clientgo)
 
-## What is mutual TLS (mTLS)?
+## 1. What is mutual TLS (mTLS)?
 
 Mutual TLS, or mTLS for short, is a method for [mutual authentication](https://en.wikipedia.org/wiki/Mutual_authentication). mTLS using TLS do both side authentication & authorization.
 
 mTLS helps ensure that traffic is secure and trusted in both directions between a client and server. 
 
 
-## How does mTLS work? 
+## 2. How does mTLS work? 
 
 Normally in TLS, the server has a TLS certificate and a public/private key pair, while the client does not. The typical TLS process works like this:
 
@@ -27,12 +34,13 @@ In mTLS, however, both the client and server have a certificate, and both sides 
 6. **Server grants access**
 7. Client and server exchange information over encrypted TLS connection
 
-## What does This Example do?
+[![](https://mermaid.ink/img/eyJjb2RlIjoiJSV7aW5pdCA6IFxuXG59JSVcblxuc2VxdWVuY2VEaWFncmFtXG4gICAgQ2xpZW50IC0-PiBTZXJ2ZXI6ICgxKSBDb25uZWN0IFJlcXVlc3RcbiAgICBTZXJ2ZXIgLT4-IENsaWVudCA6ICgyKSBQcmVzZW50IHNlcnZlcidzIFRMUyBjZXJ0aWZpY2F0ZVxuICAgIE5vdGUgbGVmdCBvZiBDbGllbnQgOiAoMykgQ2xpZW50IHZlcmlmaWVzIFNlcnZlcidzIGNlcnRmaWNhdGVcbiAgICBDbGllbnQgLT4-IFNlcnZlciA6ICg0KSBQcmVzZW50IGNsaWVudCdzIFRMUyBjZXJ0ZmljYXRlXG4gICAgIE5vdGUgcmlnaHQgb2YgU2VydmVyIDogKDUpIFNlcnZlciB2ZXJpZmllcyBDbGllbnQncyBjZXJ0ZmljYXRlXG4gICAgU2VydmVyIC0-PiBDbGllbnQ6ICg2KSBTZXJ2ZXIgZ3JhbnRzIGFjY2Vzc1xuICAgICBcbiAgICBDbGllbnQgLS0pIFNlcnZlcjogKDcpIGV4Y2hhbmdlIHRoZSBpbmZyb21hdGlvblxuICAgIFNlcnZlciAtLSkgQ2xpZW50IDogXG5cblxuICAgIFxuICAgICAgICAgICAgIiwibWVybWFpZCI6eyJ0aGVtZSI6ImJhc2UiLCJ0aGVtZVZhcmlhYmxlcyI6eyJiYWNrZ3JvdW5kIjoiIzAwMCIsImZvbnRGYW1pbHkiOiJhcmlhbCIsImZvbnRTaXplIjoiMThweCIsInByaW1hcnlDb2xvciI6InJnYigyNDYgMjQ4IDI1MCkiLCJub3RlQmtnQ29sb3IiOiIjZmZmIiwibm90ZVRleHRDb2xvciI6IiMwMDAiLCJub3RlQm9yZGVyQ29sb3IiOiIjZmZmIn19LCJ1cGRhdGVFZGl0b3IiOmZhbHNlLCJhdXRvU3luYyI6dHJ1ZSwidXBkYXRlRGlhZ3JhbSI6ZmFsc2V9)](https://mermaid.live/edit#eyJjb2RlIjoiJSV7aW5pdCA6IFxuXG59JSVcblxuc2VxdWVuY2VEaWFncmFtXG4gICAgQ2xpZW50IC0-PiBTZXJ2ZXI6ICgxKSBDb25uZWN0IFJlcXVlc3RcbiAgICBTZXJ2ZXIgLT4-IENsaWVudCA6ICgyKSBQcmVzZW50IHNlcnZlcidzIFRMUyBjZXJ0aWZpY2F0ZVxuICAgIE5vdGUgbGVmdCBvZiBDbGllbnQgOiAoMykgQ2xpZW50IHZlcmlmaWVzIFNlcnZlcidzIGNlcnRmaWNhdGVcbiAgICBDbGllbnQgLT4-IFNlcnZlciA6ICg0KSBQcmVzZW50IGNsaWVudCdzIFRMUyBjZXJ0ZmljYXRlXG4gICAgIE5vdGUgcmlnaHQgb2YgU2VydmVyIDogKDUpIFNlcnZlciB2ZXJpZmllcyBDbGllbnQncyBjZXJ0ZmljYXRlXG4gICAgU2VydmVyIC0-PiBDbGllbnQ6ICg2KSBTZXJ2ZXIgZ3JhbnRzIGFjY2Vzc1xuICAgICBcbiAgICBDbGllbnQgLS0pIFNlcnZlcjogKDcpIGV4Y2hhbmdlIHRoZSBpbmZyb21hdGlvblxuICAgIFNlcnZlciAtLSkgQ2xpZW50IDogXG5cblxuICAgIFxuICAgICAgICAgICAgIiwibWVybWFpZCI6IiAgICB7XG4gICAgICAgIFwidGhlbWVcIjogXCJiYXNlXCIsXG4gICAgICAgIFwidGhlbWVWYXJpYWJsZXNcIiA6IHtcbiAgICAgICAgICAgIFwiYmFja2dyb3VuZFwiIDpcIiMwMDBcIixcbiAgICAgICAgICAgIFwiZm9udEZhbWlseVwiOiBcImFyaWFsXCIsXG4gICAgICAgICAgICBcImZvbnRTaXplXCIgOiBcIjE4cHhcIixcbiAgICAgICAgICAgIFwicHJpbWFyeUNvbG9yXCI6IFwicmdiKDI0NiAyNDggMjUwKVwiLFxuICAgICAgICAgICAgXCJub3RlQmtnQ29sb3JcIjogXCIjZmZmXCIsXG4gICAgICAgICAgICBcIm5vdGVUZXh0Q29sb3JcIjpcIiMwMDBcIixcbiAgICAgICAgICAgIFwibm90ZUJvcmRlckNvbG9yXCI6IFwiI2ZmZlwiXG4gICAgICAgIH1cbiAgICB9IiwidXBkYXRlRWRpdG9yIjpmYWxzZSwiYXV0b1N5bmMiOnRydWUsInVwZGF0ZURpYWdyYW0iOmZhbHNlfQ)
 
-**The example to generate to certs and key**
+## 3. Example Walkthrough
 
+### 3.1 Certs and Keys
 
-The basic idea as below:
+The completed script is [certs/key.sh](certs/key.sh)
 
 1. **Generate CA Root**. The first thing we need to do to add mTLS to the connection is to generate a self-signed rootCA file that would be used to sign both the server and client cert. 
 
@@ -84,74 +92,85 @@ The basic idea as below:
     ```
 
 
-The completed script is [certs/key.sh](certs/key.sh)
+### 3.2 Server.go 
 
+The [server.go](server.go) has the following works.
 
-**The example of how to write the Golang program for both server and client-side**
+- Listen on both HTTP(`8080`) and HTTPS(`8443`). For mTLS, we only consider the HTTPS.
+- It needs the three files 
+    - CA Root certificate `ca.crt`
+    - Server's certificate `servier.crt` and its private key `server.key`
+- `/hello` is the HTTP API call, which would reply "Hello, World" to the client.
 
-1. [server.go](server.go) shows how to listen on HTTPS with requiring client-side verification. 
+To enable the mTLS , it requires for a CA pool and client-side authentication, something like below
 
-	Note: service side need the three files -  `CA.cert`, `servier.cert`, `server.key`
+```go
+caCertPool := x509.NewCertPool()
+caCertFile, err := ioutil.ReadFile("./certs/ca.crt")
+caCertPool.AppendCertsFromPEM(caCertFile) 
+...
+...
+tlsConfig := &tls.Config{
+	ClientCAs:  caCertPool,
+	ClientAuth: tls.RequireAndVerifyClientCert, //<-- this is the key
+	MinVersion: tls.VersionTLS12,
+}
+```
 
-	```go
-	tlsConfig := &tls.Config{
-		ClientCAs:  caCertPool,
-		ClientAuth: tls.RequireAndVerifyClientCert, //<-- this is the key
-		MinVersion: tls.VersionTLS12,
-	}
-	```
+You can run Server like this
 
-	You can run like this
-	
-	```bash
-	go run server.go
-	```
+```bash
+go run server.go
+```
 
-	When the client successfully sent the request. It would output the header and TLS connection state which includes the client's subjects.
+When the client successfully sent the request. It would output the header and TLS connection state which includes the client's subjects.
 
-	```log
-	(HTTP) Listen on :8080
-	(HTTPS) Listen on :8443
-	2021/12/31 14:47:13 >>>>>>>>>>>>>>>> Header <<<<<<<<<<<<<<<<
-	2021/12/31 14:47:13 User-Agent:curl/7.77.0
-	2021/12/31 14:47:13 Accept:*/*
-	2021/12/31 14:47:13 >>>>>>>>>>>>>>>> State <<<<<<<<<<<<<<<<
-	2021/12/31 14:47:13 Version: 303
-	2021/12/31 14:47:13 HandshakeComplete: true
-	2021/12/31 14:47:13 DidResume: false
-	2021/12/31 14:47:13 CipherSuite: c02f
-	2021/12/31 14:47:13 NegotiatedProtocol: h2
-	2021/12/31 14:47:13 NegotiatedProtocolIsMutual: true
-	2021/12/31 14:47:13 Certificate chain:
-	2021/12/31 14:47:13  0 s:/C=[SO]/ST=[Earth]/L=[Mountain]/O=[Client-B]/OU=[Client-B-OU]/CN=localhost
-	2021/12/31 14:47:13    i:/C=[SO]/ST=[Earth]/L=[Mountain]/O=[MegaEase]/OU=[MegaCloud]/CN=localhost
-	2021/12/31 14:47:13  1 s:/C=[SO]/ST=[Earth]/L=[Mountain]/O=[MegaEase]/OU=[MegaCloud]/CN=localhost
-	2021/12/31 14:47:13    i:/C=[SO]/ST=[Earth]/L=[Mountain]/O=[MegaEase]/OU=[MegaCloud]/CN=localhost
-	2021/12/31 14:47:13 >>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<
-	``` 
+```log
+(HTTP) Listen on :8080
+(HTTPS) Listen on :8443
+2021/12/31 14:47:13 >>>>>>>>>>>>>>>> Header <<<<<<<<<<<<<<<<
+2021/12/31 14:47:13 User-Agent:curl/7.77.0
+2021/12/31 14:47:13 Accept:*/*
+2021/12/31 14:47:13 >>>>>>>>>>>>>>>> State <<<<<<<<<<<<<<<<
+2021/12/31 14:47:13 Version: 303
+2021/12/31 14:47:13 HandshakeComplete: true
+2021/12/31 14:47:13 DidResume: false
+2021/12/31 14:47:13 CipherSuite: c02f
+2021/12/31 14:47:13 NegotiatedProtocol: h2
+2021/12/31 14:47:13 NegotiatedProtocolIsMutual: true
+2021/12/31 14:47:13 Certificate chain:
+2021/12/31 14:47:13  0 s:/C=[SO]/ST=[Earth]/L=[Mountain]/O=[Client-B]/OU=[Client-B-OU]/CN=localhost
+2021/12/31 14:47:13    i:/C=[SO]/ST=[Earth]/L=[Mountain]/O=[MegaEase]/OU=[MegaCloud]/CN=localhost
+2021/12/31 14:47:13  1 s:/C=[SO]/ST=[Earth]/L=[Mountain]/O=[MegaEase]/OU=[MegaCloud]/CN=localhost
+2021/12/31 14:47:13    i:/C=[SO]/ST=[Earth]/L=[Mountain]/O=[MegaEase]/OU=[MegaCloud]/CN=localhost
+2021/12/31 14:47:13 >>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<
+``` 
 
-2. [client.go](client.go) shows how the client connects to the server by using its certification.
+### 3.2 Client.go 
 
-	Note: client side need the three files -  `CA.cert`, `client.cert`, `client.key`
+The [client.go](client.go) has the following works.
 
-	You can indicate `-c=a` for client a, and `-c=b` for client b. such as:
-	```bash
-	go run client.go -c=a
-	go run client.go -c=b
-	```
+It needs the three files -  `ca.crt`, `client.crt`, `client.key`
 
-3. You also can use the `curl` to connect to the server.
+You can indicate `-c=a` for client a, and `-c=b` for client b. such as:
+```bash
+go run client.go -c=a
+go run client.go -c=b
+```
 
-	```bash
-	curl --trace trace.log -k \
-		--cacert ./certs/ca.crt \
-		--cert ./certs/client.b.crt \
-		--key ./certs/client.b.key \
-		https://localhost:8443/hello
-	```
+You also can use the `curl` to connect to the server.
 
-	- `--trace trace.log` would record the network details of how the client communicates to the server.
-	- `-k` because we use a self-signed certificate, so we need to add this.
+```bash
+curl --trace trace.log -k \
+	--cacert ./certs/ca.crt \
+	--cert ./certs/client.b.crt \
+	--key ./certs/client.b.key \
+	https://localhost:8443/hello
+```
+
+- `--trace trace.log` would record the network details of how the client communicates to the server.
+- `-k` because we use a self-signed certificate, so we need to add this.
+
 
 
 

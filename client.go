@@ -25,7 +25,7 @@ func main() {
 
 	clientCert := fmt.Sprintf("./certs/client.%s.crt", *name)
 	clientKey := fmt.Sprintf("./certs/client.%s.key", *name)
-	fmt.Println(clientCert, clientKey)
+	log.Println("Load key pairs - ", clientCert, clientKey)
 	certificate, err := tls.LoadX509KeyPair(clientCert, clientKey)
 	if err != nil {
 		log.Fatalf("could not load certificate: %v", err)
@@ -45,8 +45,8 @@ func main() {
 	// Using curl the verfiy it :
 	// curl --trace trace.log -k \
 	//   --cacert ./ca.crt  --cert ./client.b.crt --key ./client.b.key  \
-	//     https://localhost:8443/hello   
-	
+	//     https://localhost:8443/hello
+
 	r, err := client.Get("https://localhost:8443/hello")
 	if err != nil {
 		log.Fatalf("error making get request: %v", err)
