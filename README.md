@@ -6,7 +6,7 @@
 	- [3. Example Walkthrough](#3-example-walkthrough)
 		- [3.1 Certs and Keys](#31-certs-and-keys)
 		- [3.2 Server.go](#32-servergo)
-		- [3.2 Client.go](#32-clientgo)
+		- [3.3 Client.go](#33-clientgo)
 
 ## 1. What is mutual TLS (mTLS)?
 
@@ -50,7 +50,7 @@ The completed script is [certs/key.sh](certs/key.sh)
         -days ${DAYS} \
         -out ca.crt \
         -keyout ca.key \
-        -subj "/C=US/ST=Earth/L=Mountain View/O=MegaEase/OU=MegaCloud/CN=localhost" 
+        -subj "/C=SO/ST=Earth/L=Mountain/O=MegaEase/OU=MegaCloud/CN=localhost" 
     ```
 
 2. **Generate the Server Certificate**
@@ -61,7 +61,7 @@ The completed script is [certs/key.sh](certs/key.sh)
     
     #generate the Certificate Signing Request 
     openssl req -new -key server.key -days ${DAYS} -out server.csr \
-        -subj "/C=US/ST=Earth/L=Mountain View/O=MegaEase/OU=MegaCloud/CN=localhost" 
+        -subj "/C=SO/ST=Earth/L=Mountain/O=MegaEase/OU=MegaCloud/CN=localhost" 
     
     #sign it with Root CA
     openssl x509  -req -in server.csr \
@@ -84,7 +84,7 @@ The completed script is [certs/key.sh](certs/key.sh)
     openssl genrsa -out ${CLIENT}.key 2048
 
     openssl req -new -key ${CLIENT}.key -days ${DAYS} -out ${CLIENT}.csr \
-        -subj "/C=US/ST=Earth/L=Mountain View/O=$O/OU=$OU/CN=localhost"
+        -subj "/C=SO/ST=Earth/L=Mountain/O=$O/OU=$OU/CN=localhost"
 
     openssl x509  -req -in ${CLIENT}.csr \
         -extfile <(printf "subjectAltName=DNS:localhost") \ 
@@ -146,7 +146,7 @@ When the client successfully sent the request. It would output the header and TL
 2021/12/31 14:47:13 >>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<
 ``` 
 
-### 3.2 Client.go 
+### 3.3 Client.go 
 
 The [client.go](client.go) has the following works.
 
