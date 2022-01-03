@@ -7,7 +7,9 @@ SCRIPTPATH=`pwd -P`
 popd > /dev/null
 SCRIPTFILE=`basename $0`
 
-cd ${SCRIPTPATH}
+mkdir -p ${SCRIPTPATH}/certs
+
+cd ${SCRIPTPATH}/certs
 
 DAYS=3650
 

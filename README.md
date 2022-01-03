@@ -1,12 +1,14 @@
 # mTLS Golang Example
 
 - [mTLS Golang Example](#mtls-golang-example)
-	- [1. What is mutual TLS (mTLS)?](#1-what-is-mutual-tls-mtls)
-	- [2. How does mTLS work?](#2-how-does-mtls-work)
-	- [3. Example Walkthrough](#3-example-walkthrough)
-		- [3.1 Certs and Keys](#31-certs-and-keys)
-		- [3.2 Server.go](#32-servergo)
-		- [3.3 Client.go](#33-clientgo)
+  - [1. What is mutual TLS (mTLS)?](#1-what-is-mutual-tls-mtls)
+  - [2. How does mTLS work?](#2-how-does-mtls-work)
+  - [3. Example Walkthrough](#3-example-walkthrough)
+    - [3.1 Certs and Keys](#31-certs-and-keys)
+      - [3.1.2 Using Golang generate the Certs and Keys](#312-using-golang-generate-the-certs-and-keys)
+      - [3.1.2 Using OpenSSL generate the Certs and Keys](#312-using-openssl-generate-the-certs-and-keys)
+    - [3.2 Server.go](#32-servergo)
+    - [3.3 Client.go](#33-clientgo)
 
 ## 1. What is mutual TLS (mTLS)?
 
@@ -40,7 +42,24 @@ In mTLS, however, both the client and server have a certificate, and both sides 
 
 ### 3.1 Certs and Keys
 
-The completed script is [certs/key.sh](certs/key.sh)
+#### 3.1.2 Using Golang generate the Certs and Keys
+
+The source code is [certs.go](certs.go), just simply run it.
+
+```
+go run certs.go
+```
+
+This source code only uses the Go Standard Library - the x509 package
+
+There are two functions - `makeCA()` and `makeCert()`
+
+- In `makeCA()`, we need to set the `IsCA` flag to `true`
+- In `makeCert()`, we set the `DNSNames` as `localhost`
+
+#### 3.1.2 Using OpenSSL generate the Certs and Keys
+
+The completed script is [key.sh](key.sh)
 
 1. **Generate CA Root**. The first thing we need to do to add mTLS to the connection is to generate a self-signed rootCA file that would be used to sign both the server and client cert. 
 

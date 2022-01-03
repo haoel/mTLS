@@ -5,5 +5,5 @@ SCRIPTPATH=`pwd -P`
 popd > /dev/null
 SCRIPTFILE=`basename $0`
 
-cd ${SCRIPTPATH}
+cd ${SCRIPTPATH}/certs
 rm -f *.key *.crt *.srl *.csr *.log
