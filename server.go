@@ -42,7 +42,9 @@ func printConnState(state *tls.ConnectionState) {
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
 	printHeader(r)
-	printConnState(r.TLS)
+	if r.TLS != nil {
+		printConnState(r.TLS)
+	}
 	log.Print(">>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<")
 	fmt.Println("")
 	// Write "Hello, world!" to the response body
