@@ -91,9 +91,9 @@ The completed script is [key.sh](key.sh)
     ```
     > Note:  after golang 1.15, we could have the following errors:
     > 
-    > x509: certificate relies on legacy Common Name field, use SANs or temporarily enable     Common Name matching with GODEBUG=x509ignoreCN=0"
+    > x509: certificate relies on legacy Common Name field, use SANs or temporarily enable Common Name matching with GODEBUG=x509ignoreCN=0"
     > 
-    > https://stackoverflow.com/questions/64814173/    how-do-i-use-sans-with-openssl-instead-of-common-name
+    > https://stackoverflow.com/questions/64814173/how-do-i-use-sans-with-openssl-instead-of-common-name
 
 3. **Generate the Client certification**
 
